@@ -7,7 +7,8 @@
  * image WIDTH (distances are round on screen). At 1440 the 16:9 still is drawn 1440 px wide, so 1 unit = 1440 CSS px.
  */
 
-import round6Paths from "../../docs/team/art/round6/paths.json";
+// Copy of docs/team/art/round6/paths.json; kept beside the code because `docs` is not uploaded to Railway.
+import round6Paths from "./heroPaths.json";
 
 export type Crop = "16x9" | "4x5";
 export type Path = [number, number][];
