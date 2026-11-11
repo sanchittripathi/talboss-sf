@@ -157,18 +157,6 @@ export const site = {
       gridLabel: "Tech professionals behind Tal, by what they do",
     },
 
-    /** L4. How it works, numbered 01 to 04 (4:154). */
-    how: {
-      heading: "How it works",
-      sub: "Three questions now. Tal does the rest.",
-      steps: [
-        { title: "Tell Tal who you are", body: "Your name, where you work and your title. It takes a minute." },
-        { title: "Tal builds your career graph", body: "Your roles, skills and history, read from your LinkedIn and resume." },
-        { title: "Tal emails you roles that fit", body: "Roles at AI and consumer startups, picked for what you do." },
-        { title: "We only apply once you approve", body: "Say yes to a role and Tal makes the intro." },
-      ],
-    },
-
     /** L5. What to expect (glass card 22:1165; v4.2: no orb, text only). Each row leads in white and continues in 64 % white. */
     deal: {
       heading: "What to expect",

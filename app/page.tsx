@@ -5,7 +5,6 @@ import { Deal } from "@/components/landing/Deal";
 import { Faq } from "@/components/landing/Faq";
 import { Footer } from "@/components/landing/Footer";
 import { Hero } from "@/components/landing/Hero";
-import { How } from "@/components/landing/How";
 import { LandingView } from "@/components/landing/LandingView";
 import { Marquee } from "@/components/landing/Marquee";
 import { Nav } from "@/components/landing/Nav";
@@ -36,7 +35,6 @@ export default function Home() {
         <Marquee />
         <Chat />
         <BehindTal />
-        <How />
         <Deal />
         <Faq />
       </main>
