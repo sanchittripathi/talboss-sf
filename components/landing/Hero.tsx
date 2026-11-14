@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element -- art is pre-sized AVIF/WebP in <picture> */
 import { preload } from "react-dom";
 import { Wordmark } from "@/components/ds/Wordmark";
-import { site } from "@/content/site";
+import { copyFor, type Market } from "@/content/site";
 import { HeroLive } from "./HeroLive";
 import { StartLink } from "./StartLink";
 
-const H = site.select.hero;
-const SUB = H.sub.split(/(?<=\.) /);
 
 /* Round 6 (docs/team/art/round6/PICK.md, `fog-e1`), generated at 4K and never upscaled. The wordmark must sit in black
    sky above the ridge (y ≈ 0.36) and the sub on the dark grass under the crest (y ≈ 0.69). The ridge-to-crest span
@@ -36,7 +34,9 @@ const M_SIZES = "max(100vw, 387px)";
  * film grain), which replaces the CSS grain while it runs. The metallic wordmark (160 tall, 96 on phones) in the black
  * sky; sub, white pill and fine print on the dark grass. Opacity of the art never animates, so it counts for LCP at once.
  */
-export function Hero() {
+export function Hero({ market = "us" }: { market?: Market }) {
+  const H = copyFor(market).hero;
+  const SUB = H.sub.split(/(?<=\.) /);
   // The still is the LCP: preload the right crop, AVIF first (the same srcset and sizes as the <picture>).
   preload("/art/hero-4x5-800.avif", { as: "image", type: "image/avif", fetchPriority: "high", imageSrcSet: M_AVIF, imageSizes: M_SIZES, media: "(max-width: 767px)" });
   preload("/art/hero-16x9-2880.avif", { as: "image", type: "image/avif", fetchPriority: "high", imageSrcSet: D_AVIF, imageSizes: D_SIZES, media: "(min-width: 768px)" });

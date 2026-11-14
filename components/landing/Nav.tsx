@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/ds/Wordmark";
-import { site } from "@/content/site";
+import { useCopy } from "@/content/market";
 import { StartLink } from "./StartLink";
 
-const T = site.select.topBar;
 
 /**
  * Sticky nav under the raised bar. Over the hero it is clear and the wordmark is hidden (the hero logo is the
@@ -13,6 +12,7 @@ const T = site.select.topBar;
  * (opacity + 6 px rise, 320 ms ease-out).
  */
 export function Nav() {
+  const T = useCopy().topBar;
   const [solid, setSolid] = useState(false);
   useEffect(() => {
     const logo = document.getElementById("hero-logo");

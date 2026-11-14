@@ -43,7 +43,8 @@ function readApplication(raw: unknown): Application | null {
   const status = str("linkedinStatus");
   const url = str("linkedinUrl", 300);
   return {
-    program: "tal-select-us",
+    // "/pune" sends "tal-india"; anything else is the US site. The leads desk splits on this.
+    program: r.program === "tal-india" ? "tal-india" : "tal-select-us",
     name,
     company,
     designation,
@@ -173,7 +174,8 @@ export async function POST(request: Request) {
   // Into the team's Google Sheet, after the reply, but only a complete lead. With no email the reply below makes the
   // flow ask for one, and the resume comes back with it; that upload pushes the row (the sheet upserts by id).
   // If the push fails the row stays pending for /api/leads/resync.
-  if (env && submission.email) await waitUntil(syncLead(env, new URL(request.url).origin, id));
+  // India leads (/pune) stay off the US sheet: they live on /leads/pune and its CSV.
+  if (env && submission.email && application?.program !== "tal-india") await waitUntil(syncLead(env, new URL(request.url).origin, id));
 
   return Response.json({ ok: true, id, email: submission.email || null });
 }

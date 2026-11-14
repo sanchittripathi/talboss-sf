@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { Magnetic } from "@/components/ds/Magnetic";
 import { track } from "@/lib/analytics";
+import { useMarket } from "@/content/market";
+import { basePath } from "@/content/site";
 
 /**
  * Every "Apply for Tal" pill. On click a white circle grows from the pointer (clip-path, 560 ms,
@@ -12,13 +14,15 @@ import { track } from "@/lib/analytics";
  */
 export function StartLink({ children, className, from, magnetic = true }: { children: ReactNode; className: string; from: string; magnetic?: boolean }) {
   const router = useRouter();
+  const market = useMarket();
+  const href = `${basePath(market)}/start`;
   // Prefetch the flow when the browser is idle after load (or on first hover/focus), never on the critical path.
   useEffect(() => {
     let done = false;
     const go = () => {
       if (done) return;
       done = true;
-      router.prefetch("/start");
+      router.prefetch(href);
     };
     const idle = () => ("requestIdleCallback" in window ? window.requestIdleCallback(go, { timeout: 4000 }) : setTimeout(go, 3000));
     const onLoad = () => setTimeout(idle, 2500);
@@ -26,10 +30,10 @@ export function StartLink({ children, className, from, magnetic = true }: { chil
     else window.addEventListener("load", onLoad, { once: true });
     window.addEventListener("pointerover", go, { once: true, passive: true });
     return () => window.removeEventListener("load", onLoad);
-  }, [router]);
+  }, [router, href]);
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    track("flow_start", { from });
+    track("flow_start", { from, market });
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     e.preventDefault();
@@ -44,12 +48,12 @@ export function StartLink({ children, className, from, magnetic = true }: { chil
     document.body.appendChild(wipe);
     const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
     requestAnimationFrame(() => requestAnimationFrame(() => (wipe.style.clipPath = `circle(${r + 20}px at ${x}px ${y}px)`)));
-    setTimeout(() => router.push("/start"), 380);
+    setTimeout(() => router.push(href), 380);
     setTimeout(() => wipe.remove(), 4000); // safety net if the flow never mounts
   };
 
   const link = (
-    <a href="/start" onClick={go} onFocus={() => router.prefetch("/start")} className={className}>
+    <a href={href} onClick={go} onFocus={() => router.prefetch(href)} className={className}>
       {children}
     </a>
   );

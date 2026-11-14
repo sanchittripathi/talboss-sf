@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { TalAvatar } from "@/components/ds/LogoTile";
 import { useGlow } from "@/components/ds/useGlow";
-import { site } from "@/content/site";
+import { useCopy } from "@/content/market";
 import { useSeen } from "./useSeen";
 
-const C = site.select.chat;
 
 /** Three dots, 1.2 s loop, 160 ms apart (opacity + 2 px lift). */
 function Typing() {
+  const C = useCopy().chat;
   return (
     <span className="flex h-5 items-center gap-1" aria-label={C.typing}>
       {[0, 1, 2].map((i) => (
@@ -27,6 +27,7 @@ function Typing() {
  * Reduced motion: the whole thread at once. CSS transitions only (no animation library on the landing).
  */
 export function Chat() {
+  const C = useCopy().chat;
   const ref = useRef<HTMLDivElement>(null);
   const seen = useSeen(ref, 0.45);
   const [shown, setShown] = useState(0);

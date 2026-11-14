@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const key = url.searchParams.get("key");
   if (!env?.LEADS_KEY || !(await leadsAllowed(env, { key }))) return new Response("Not found", { status: 404 });
 
-  const next = new URL("/leads", url.origin);
+  const next = new URL(url.searchParams.get("to") === "pune" ? "/leads/pune" : "/leads", url.origin);
   const q = url.searchParams.get("q");
   if (q) next.searchParams.set("q", q);
   const secure = url.protocol === "https:" ? "; Secure" : "";

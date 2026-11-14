@@ -6,7 +6,8 @@ import { HeroField } from "@/components/ds/HeroField";
 import { LogoTile } from "@/components/ds/LogoTile";
 import { Magnetic } from "@/components/ds/Magnetic";
 import { Progress } from "@/components/ds/Progress";
-import { site } from "@/content/site";
+import { basePath, programFor, site } from "@/content/site";
+import { useCopy, useMarket } from "@/content/market";
 import { track } from "@/lib/analytics";
 import type { Profile } from "@/lib/linkedin";
 import { checkResumeFile, formatBytes } from "@/lib/validation";
@@ -19,8 +20,6 @@ import { ProfileCard } from "./ProfileCard";
 
 /* eslint-disable @next/next/no-img-element -- local DS icons */
 
-const S = site.select;
-const A = S.apply;
 const errors = site.upload.errors;
 const accept = [...site.upload.extensions, ...site.upload.mimeTypes].join(",");
 // v4.2 §10 (docs/team/LOOKUP_PREFETCH.md): each poll holds on the server (≤ 5 s) until a run finishes or the stage
@@ -343,6 +342,7 @@ function TextButton({ children, ...rest }: React.ButtonHTMLAttributes<HTMLButton
 }
 
 function EnterHint() {
+  const A = useCopy().apply;
   return <p className="t-helper hidden text-s700 md:block">{A.enterHint.replace("Enter", "⏎")}</p>;
 }
 
@@ -383,6 +383,9 @@ export function Flow() {
 }
 
 function FlowInner() {
+  const market = useMarket();
+  const S = useCopy();
+  const A = S.apply;
   const [s, dispatch] = useReducer(reducer, initial);
   const [until, setUntil] = useState("");
   const [now, setNow] = useState(0);
@@ -696,6 +699,7 @@ function FlowInner() {
         linkedinStatus: s.status,
         linkedinProfile: s.status === "confirmed" ? s.profile : null,
         ...(email ? { email } : {}),
+        program: programFor(market),
       }),
     );
     const minWait = sleep(1100); // long enough to read "Saving your resume"
@@ -965,7 +969,7 @@ function FlowInner() {
   return (
     <div className={`flex min-h-dvh flex-col ${isDone ? "bg-white" : "bg-white"}`}>
       <header className="relative z-20 flex h-16 shrink-0 items-center justify-between px-6 md:h-[88px] md:px-12">
-        <LogoTile />
+        <LogoTile href={basePath(market) || "/"} />
         {/* v4.2: no "Questions?" button. Phones have no footer, so Back sits here (desktop keeps it in the footer). */}
         {canBack ? (
           <button type="button" onClick={() => dispatch({ type: "back" })} className="pill pill-s -mr-2 gap-0.5 px-2 text-s1000 hover:bg-s100 md:hidden">
@@ -1014,7 +1018,9 @@ function FlowInner() {
   );
 }
 
-function Saving({ label = A.resume.sending }: { label?: string }) {
+function Saving({ label }: { label?: string }) {
+  const fallback = useCopy().apply.resume.sending;
+  label = label ?? fallback;
   return (
     <span className="flex items-center gap-2.5">
       <span className="relative size-3.5 animate-spin rounded-full border-[1.5px] border-white/30 border-t-white motion-reduce:animate-none" aria-hidden />

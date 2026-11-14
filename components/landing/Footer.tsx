@@ -1,15 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- logo tile mark */
-import { site } from "@/content/site";
+import { copyFor, site, type Market } from "@/content/site";
 import { StartLink } from "./StartLink";
 
-const C = site.select.credits;
 
 /**
  * L7 The bottom CTA (v4.2: "Apply for Tal", centred above the footer), then the footer (4:224): hairline, logo tile, © line, links; then the giant metallic wordmark cropped at the fold
  * (560 tall at 1440) under a mask that fades it to 8 % at the bottom. It rises 14 % → 0 as the footer scrolls in
  * (CSS scroll-driven animation; still where scroll timelines aren't supported or motion is reduced).
  */
-export function Footer() {
+export function Footer({ market = "us" }: { market?: Market }) {
+  const C = copyFor(market).credits;
   return (
     <>
     {/* The hero's pill and fine print again, as the close (pulled up into the Questions padding). */}
@@ -17,7 +17,7 @@ export function Footer() {
       <StartLink from="footer" className="pill pill-l pill-white px-10">
         {C.cta}
       </StartLink>
-      <p className="t-helper text-white/64">{site.select.hero.note}</p>
+      <p className="t-helper text-white/64">{copyFor(market).hero.note}</p>
     </div>
     <footer className="border-t border-hair px-6 pt-8 md:px-12">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">

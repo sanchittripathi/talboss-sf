@@ -363,3 +363,88 @@ export const site = {
 };
 
 export type Site = typeof site;
+
+/* ---------------------------------------------------------------- */
+/* India (/pune, 14 Nov 2026). The same page and art as "/", with    */
+/* the words moved to India: Bangalore and Pune named together (never */
+/* Pune alone), Indian startups and tech. Only the keys that change   */
+/* are written out; everything else is the US copy.                   */
+/* ---------------------------------------------------------------- */
+
+export type Market = "us" | "india";
+export type Copy = typeof site.select;
+
+const previewIndia = "In early preview in Bangalore and Pune.";
+const us = site.select;
+
+export const india: Copy = {
+  ...us,
+  seo: {
+    ...us.seo,
+    title: "Tal: a talent agent for engineers, PMs and designers in India",
+    description: `Tal is a talent agent for engineers, PMs and designers at India's best startups and tech companies. ${previewIndia} You see every role first, and it's free for you.`,
+  },
+  og: {
+    line: "tal",
+    sub: `The talent agent for engineers, PMs and designers in India. ${previewIndia}`,
+    alt: `The silver tal wordmark on black, with the line: The talent agent for engineers, PMs and designers in India. ${previewIndia}`,
+  },
+  hero: {
+    ...us.hero,
+    sub: `The talent agent for engineers, PMs and designers in India. ${previewIndia}`,
+  },
+  chat: {
+    ...us.chat,
+    messages: [
+      {
+        from: "tal",
+        meta: "Tal · Monday",
+        text: "Three new roles for you: Bangalore, Pune and remote.",
+        roles: [
+          ["SDE 3", "a Series B fintech"],
+          ["Founding engineer", "a seed-stage AI startup"],
+          ["Senior PM", "a Series C consumer app"],
+        ],
+        after: 400,
+      },
+      { from: "you", text: "Yes to the fintech one. No to the other two.", after: 1500 },
+      { from: "tal", meta: "Tal · Tuesday", text: "Intro sent to the founder. They'll message you directly.", after: 1100 },
+    ],
+  },
+  stats: {
+    ...us.stats,
+    body: "Engineers, product managers, designers and founders, from Google to seed-stage startups. Tal is opening in Bangalore and Pune first.",
+  },
+  deal: {
+    ...us.deal,
+    rows: [
+      ["It's free for you.", " Companies pay Tal when they hire someone."],
+      ["You'll see every role first.", " Tal only applies to the ones you approve."],
+      ["Tal works for you for six months.", " Go quiet and Tal will stop reaching out."],
+      ["Roles are in Bangalore, Pune, across India, and remote.", ""],
+    ],
+  },
+  faq: {
+    ...us.faq,
+    items: [
+      ["Who is Tal for?", "Engineers, PMs and designers who'd like to hear about good roles in Bangalore, Pune, elsewhere in India or remote. You don't have to be looking right now."],
+      ["Does it cost anything?", "No, it's free for you. Companies pay Tal when they hire someone it introduced."],
+      ["Which companies does Tal work with?", "Indian startups and tech companies, from seed to late stage, in AI, fintech, consumer and SaaS. Tal only sends you the roles that fit what you do."],
+      ["What happens after six months?", "Tal checks in to ask if you'd like to keep going. If you don't reply, it stops."],
+    ],
+  },
+  apply: {
+    ...us.apply,
+    title: {
+      ...us.apply.title,
+      sub: "SDE 2, Engineering Manager, Product Manager…",
+      placeholder: "Senior Software Engineer",
+    },
+  },
+};
+
+export const copyFor = (market: Market): Copy => (market === "india" ? india : us);
+/** Where each market's landing lives ("" = the root). The flow is `${base}/start`. */
+export const basePath = (market: Market) => (market === "india" ? "/pune" : "");
+/** applications.program for each market. The leads desk splits on it (/leads = US, /leads/pune = India). */
+export const programFor = (market: Market) => (market === "india" ? "tal-india" : "tal-select-us");

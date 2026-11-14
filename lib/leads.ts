@@ -44,13 +44,21 @@ FROM submissions s LEFT JOIN applications a ON a.submission_id = s.id`;
 
 /* ------------------------------------------------------------------ reads */
 
+/** Which desk: "us" = /leads (everything that isn't India, so old rows stay here), "india" = /leads/pune. */
+export type LeadMarket = "us" | "india";
+const INDIA = "tal-india";
+const MARKET = (m: LeadMarket) => (m === "india" ? `a.program = '${INDIA}'` : `COALESCE(a.program, '') <> '${INDIA}'`);
+
 const like = (q: string) => `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
 const SEARCH = `(a.name LIKE ?1 ESCAPE '\\' OR a.company LIKE ?1 ESCAPE '\\' OR s.email LIKE ?1 ESCAPE '\\' OR a.email LIKE ?1 ESCAPE '\\')`;
 
 /** One page of leads, newest first. `q` matches name, company or email (case-insensitive). */
-export async function listLeads(env: CloudflareEnv, { q = "", page = 1, perPage = 50 } = {}): Promise<{ rows: LeadRow[]; total: number }> {
+export async function listLeads(
+  env: CloudflareEnv,
+  { q = "", page = 1, perPage = 50, market = "us" as LeadMarket } = {},
+): Promise<{ rows: LeadRow[]; total: number }> {
   const term = q.trim().slice(0, 100);
-  const where = term ? ` WHERE ${SEARCH}` : "";
+  const where = ` WHERE ${MARKET(market)}${term ? ` AND ${SEARCH}` : ""}`;
   const offset = (Math.max(1, page) - 1) * perPage;
   const bind = term ? [like(term)] : [];
   const [list, count] = await env.DB.batch([
@@ -61,8 +69,8 @@ export async function listLeads(env: CloudflareEnv, { q = "", page = 1, perPage 
 }
 
 /** Every lead, oldest first (the CSV). */
-export async function allLeads(env: CloudflareEnv, limit = 5000): Promise<LeadRow[]> {
-  const { results } = await env.DB.prepare(`${SELECT} ORDER BY s.created_at ASC LIMIT ?`).bind(limit).all<LeadRow>();
+export async function allLeads(env: CloudflareEnv, limit = 5000, market: LeadMarket = "us"): Promise<LeadRow[]> {
+  const { results } = await env.DB.prepare(`${SELECT} WHERE ${MARKET(market)} ORDER BY s.created_at ASC LIMIT ?`).bind(limit).all<LeadRow>();
   return results;
 }
 
@@ -71,7 +79,9 @@ export async function getLead(env: CloudflareEnv, id: string): Promise<LeadRow |
 }
 
 export async function pendingCount(env: CloudflareEnv): Promise<number> {
-  const r = await env.DB.prepare(`SELECT COUNT(*) AS n FROM submissions WHERE sheet_pending = 1`).first<{ n: number }>();
+  const r = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM submissions s LEFT JOIN applications a ON a.submission_id = s.id WHERE s.sheet_pending = 1 AND ${MARKET("us")}`,
+  ).first<{ n: number }>();
   return Number(r?.n ?? 0);
 }
 
@@ -247,7 +257,7 @@ export async function resyncPending(env: CloudflareEnv, origin: string, max = 50
   let pushed = 0;
   let ok = true;
   while (pushed < max) {
-    const { results } = await env.DB.prepare(`${SELECT} WHERE s.sheet_pending = 1 ORDER BY s.created_at ASC LIMIT 50`).all<LeadRow>();
+    const { results } = await env.DB.prepare(`${SELECT} WHERE s.sheet_pending = 1 AND ${MARKET("us")} ORDER BY s.created_at ASC LIMIT 50`).all<LeadRow>();
     if (!results.length) break;
     const rows = await Promise.all(results.map((r) => sheetLead(origin, env.LINK_SECRET, r)));
     if (!(await pushToSheet(env, rows))) {

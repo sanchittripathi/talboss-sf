@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { site } from "@/content/site";
+import { useCopy } from "@/content/market";
 
-const F = site.select.faq;
 
 /**
  * L6 Questions (4:195): accordion, the first open. The answer's height animates with the grid-rows trick
@@ -11,6 +10,7 @@ const F = site.select.faq;
  * + turns 90° and collapses into a – (240 ms ease-out). Buttons carry aria-expanded / aria-controls.
  */
 export function Faq() {
+  const F = useCopy().faq;
   const [open, setOpen] = useState(0);
   return (
     <section id="questions" aria-labelledby="questions-h" className="flex scroll-mt-32 flex-col gap-6 px-6 pb-24 md:flex-row md:gap-16 md:px-12 md:pb-40">

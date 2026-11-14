@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element -- pre-sized art */
 import type { CSSProperties } from "react";
 import { networkStats } from "@/content/network";
-import { site } from "@/content/site";
+import { copyFor, type Market } from "@/content/site";
 import { CountUp } from "./CountUp";
 import { Faces } from "./Faces";
 import { LOGOS } from "./Marquee";
 
-const B = site.select.stats;
 
 /** How many columns the last tile spans so the grid ends flush, for `n` tiles in `cols` columns. */
 const span = (n: number, cols: number) => {
@@ -24,7 +23,8 @@ const span = (n: number, cols: number) => {
  * Behind the card, full-bleed on the black page: the round-5 node map (`public/art/wall-*`, PICK.md) at 18 %, faded
  * out at its top and bottom edges, so the people sit on "a network".
  */
-export function BehindTal() {
+export function BehindTal({ market = "us" }: { market?: Market }) {
+  const B = copyFor(market).stats;
   const { stats } = networkStats();
   const byKey = new Map(stats.map((s) => [s.key, s]));
   const tiles = B.tiles.flatMap((k) => {

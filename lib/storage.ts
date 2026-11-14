@@ -117,7 +117,8 @@ function cloudflare(env: CloudflareEnv): ResumeStorage {
   return {
     async save(s, file, a) {
       // Only complete leads (with an email) wait for the Google Sheet; an email-less one never goes there.
-      const pending = s.email ? 1 : 0;
+      // India leads (/pune) never go to the US sheet either: they have their own desk, /leads/pune.
+      const pending = s.email && a?.program !== "tal-india" ? 1 : 0;
       const prev = await findEmailless(env, s, a);
       if (prev && a) {
         // The same resume is already in KV under resume:<prev.id>; keep it and the row's id and created_at.

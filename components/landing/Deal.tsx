@@ -1,13 +1,13 @@
 "use client";
 
 import { useGlow } from "@/components/ds/useGlow";
-import { site } from "@/content/site";
+import { useCopy } from "@/content/market";
 
-const D = site.select.deal;
 
 /** L5 What to expect (22:1165 / 22:1393; v4.2: the orb is gone, text only): glass card, cursor highlight, the title
  *  on the left and four hairline rows on the right (stacked on phones). */
 export function Deal() {
+  const D = useCopy().deal;
   const glow = useGlow();
   return (
     <section aria-labelledby="deal" className="px-4 pb-24 md:px-12 md:pb-40">

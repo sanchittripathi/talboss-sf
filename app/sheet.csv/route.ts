@@ -23,7 +23,8 @@ export async function GET(request: Request) {
   const allowed = !!env?.LINK_SECRET && ((!!env.SHEET_KEY && sameKey(key, env.SHEET_KEY)) || (await leadsAllowed(env, { cookie: cookieFrom(request) })));
   if (!env || !allowed) return new Response("Not found", { status: 404 });
 
-  const rows = await allLeads(env, 5000);
+  const market = url.searchParams.get("market") === "india" ? "india" : "us";
+  const rows = await allLeads(env, 5000, market);
   const lines = [HEADERS.join(",")];
   for (const r of rows) {
     const link = (await resumeUrl(url.origin, env.LINK_SECRET, r)) || "no resume";
@@ -38,6 +39,6 @@ export async function GET(request: Request) {
   }
 
   const headers: Record<string, string> = { "content-type": "text/csv; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" };
-  if (url.searchParams.get("download") === "1") headers["content-disposition"] = `attachment; filename="tal-leads-${istStamp(new Date().toISOString()).slice(0, 10)}.csv"`;
+  if (url.searchParams.get("download") === "1") headers["content-disposition"] = `attachment; filename="tal-leads-${market === "india" ? "india-" : ""}${istStamp(new Date().toISOString()).slice(0, 10)}.csv"`;
   return new Response(lines.join("\n") + "\n", { headers });
 }

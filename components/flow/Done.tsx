@@ -4,10 +4,10 @@
 import { m, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Magnetic } from "@/components/ds/Magnetic";
-import { site } from "@/content/site";
+import { useCopy, useMarket } from "@/content/market";
+import { basePath } from "@/content/site";
 import { EASE_OUT } from "./motion";
 
-const D = site.select.apply.done;
 
 /** How far below its resting place the note starts (the chips' old lift). Steve r2: 120 rose through the email line
  *  and the Done pill (both already on screen); 36 is a short lift that never crosses them. */
@@ -24,6 +24,8 @@ const RISE = 36;
  */
 export function Done({ name, email, until }: { name: string; email: string | null; until: string }) {
   const still = useReducedMotion() ?? false;
+  const D = useCopy().apply.done;
+  const home = basePath(useMarket()) || "/";
   const letters = Array.from(name || " ");
   const t0 = 0.2;
   const after = t0 + letters.length * 0.034 + 0.3;
@@ -111,7 +113,7 @@ export function Done({ name, email, until }: { name: string; email: string | nul
           className="sticky bottom-0 mt-auto w-full pb-[max(34px,env(safe-area-inset-bottom))] pt-4 md:static md:mt-6 md:w-auto md:pb-0 md:pt-0"
         >
           <Magnetic className="flex w-full md:inline-flex md:w-auto">
-            <Link href="/" prefetch={false} className="pill pill-l pill-dark w-full md:w-auto">
+            <Link href={home} prefetch={false} className="pill pill-l pill-dark w-full md:w-auto">
               {D.close}
             </Link>
           </Magnetic>
